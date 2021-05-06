@@ -60,7 +60,7 @@ impl Config {
 /// Pick all three.
 /// ";
 ///
-/// assert_eq!(vec![] as Vec<String>, rust_grep::search(query, contents, true));
+/// assert_eq!(vec![] as Vec<String>, search_query::search(query, contents, true));
 /// ```
 pub fn search<'a>(query: &str, contents: &'a str, case_sensitive: bool) -> Vec<&'a str> {
     let mut query_to_search = query;

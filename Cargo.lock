@@ -3,3 +3,10 @@
 [[package]]
 name = "rust_grep"
 version = "0.1.0"
+dependencies = [
+ "search_query",
+]
+
+[[package]]
+name = "search_query"
+version = "0.1.0"

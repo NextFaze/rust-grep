@@ -1,5 +1,5 @@
-use rust_grep::run;
-use rust_grep::Config;
+use search_query::run;
+use search_query::Config;
 use std::env;
 use std::process;
 
