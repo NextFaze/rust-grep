@@ -1,3 +1,7 @@
+//! # Rust Grep
+//!
+//! `rust_grep` is a collection of utilities to find texts from a file
+
 use std::env;
 use std::error::Error;
 use std::fs;
@@ -20,13 +24,21 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn new(args: &[String]) -> Result<Config, &str> {
+    pub fn new(mut args: env::Args) -> Result<Config, &'static str> {
         if args.len() < 3 {
             return Err("Not enough params! at least two params are required.");
         }
+        args.next();
 
-        let query = args[1].clone();
-        let file_name = args[2].clone();
+        let query = match args.next() {
+            Some(arg) => arg,
+            None => return Err("Missing required search query string"),
+        };
+
+        let file_name = match args.next() {
+            Some(arg) => arg,
+            None => return Err("Missing required file name to run query search on."),
+        };
 
         let case_sensitive = env::var("CASE_INSENSITIVE").is_err();
 
@@ -38,23 +50,29 @@ impl Config {
     }
 }
 
+/// Searches for given query in the specified file
+/// # Examples
+/// ```
+/// let query = "Productive";
+/// let contents = "\
+/// Rust,
+/// Safe, fast and productive
+/// Pick all three.
+/// ";
+///
+/// assert_eq!(vec![] as Vec<String>, rust_grep::search(query, contents, true));
+/// ```
 pub fn search<'a>(query: &str, contents: &'a str, case_sensitive: bool) -> Vec<&'a str> {
-    let mut lines_found = vec![];
-
-    for line in contents.lines() {
-        let mut query_to_search = query;
-        let query_lowercase = &query.to_lowercase();
-
-        // compare lower case string
-        if !case_sensitive {
-            query_to_search = query_lowercase;
-        }
-
-        if line.contains(query_to_search) {
-            lines_found.push(line.trim());
-        }
+    let mut query_to_search = query;
+    let query = &query.to_lowercase();
+    if !case_sensitive {
+        query_to_search = query;
     }
-    lines_found
+    contents
+        .lines()
+        .filter(|line| line.contains(query_to_search))
+        .map(|line| line.trim())
+        .collect()
 }
 
 #[cfg(test)]
